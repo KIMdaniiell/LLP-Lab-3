@@ -23,7 +23,7 @@ enum convertation_result from_bmp( FILE* input_file, struct image* img ) {
     fseek(input_file, header.bOffBits, SEEK_SET);
     
     for (size_t height_cnt = 0; height_cnt < img->height; height_cnt++) {
-	if (!fread(&img->data[height_cnt*(img->width)], sizeof(struct pixel), img->width, input_file)) {
+	if (fread(&img->data[height_cnt*(img->width)], sizeof(struct pixel), img->width, input_file) != img->width) {
 		image_reset(img);
 		return BITS_READ_FAIL;
 	}
