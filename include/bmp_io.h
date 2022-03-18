@@ -1,10 +1,11 @@
 #ifndef _BMP_IO_H_
 #define _BMP_IO_H_
 
+#include "image.h"
+
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <stdbool.h>
-#include "image.h"
 
 #define HEADER_BF_TYPE 0x4D42
 #define HEADER_OFF_BITS 54
