@@ -4,24 +4,20 @@ static bool header_is_type_valid (struct bmp_header const* header);
 static bool header_is_size_valid (struct bmp_header const* header);
 static struct bmp_header header_construst(uint32_t height, uint32_t width);
 
-bool from_bmp( FILE* input_file, struct image* img ) {
+enum convertation_result from_bmp( FILE* input_file, struct image* img ) {
     struct bmp_header header = {0};
     if (!fread(&header, sizeof(struct bmp_header), 1, input_file)) {
-	puts("[ERROR] READ_INVALID_HEADER!");
-	return false;
+	return HEADER_READ_FAIL;
     }
     if (!header_is_type_valid(&header) ) {
-	puts("[ERROR] READ_INVALID_HEADER_TYPE!");
-	return false;
+	return INVALID_HEADER_TYPE;
     }
     if (!header_is_size_valid(&header) ) {
-	puts("[ERROR] READ_INVALID_HEADER_SIZE!");
-	return false;
+	return INVALID_HEADER_SIZE_PARAMETERS;
     }
     *img = image_create(header.biWidth, header.biHeight);
-    if (!img)  {
-	puts("[ERROR] READ_IMAGE_ALLOC_FAILED!");
-	return false;
+    if ((img->width == 0) || (img->height == 0))  {
+	return IMAGE_OBJECT_CREATION_FAIL;
     }
     size_t bmp_padding = (4 - (sizeof(struct pixel)*header.biWidth) % 4) % 4 ;
     fseek(input_file, header.bOffBits, SEEK_SET);
@@ -29,31 +25,28 @@ bool from_bmp( FILE* input_file, struct image* img ) {
     for (size_t height_cnt = 0; height_cnt < img->height; height_cnt++) {
 	if (!fread(&img->data[height_cnt*(img->width)], sizeof(struct pixel), img->width, input_file)) {
 		image_reset(img);
-		puts("[ERROR] READ_INVALID_BITS!");
-		return false;
+		return BITS_READ_FAIL;
 	}
 	fseek(input_file, bmp_padding, SEEK_CUR);
     }
-    return true;
+    return CONVERTATION_SUCCESS;
 }
 
-bool to_bmp( FILE* output_file, struct image const* img ) {
+enum convertation_result to_bmp( FILE* output_file, struct image const* img ) {
     struct bmp_header header = {0};
     header = header_construst(img->height, img->width);
     if (!fwrite(&header, sizeof(struct bmp_header), 1, output_file)) {
-        puts("[ERROR] WRITE_HEADER_ERROR!");
-	return false;
+	return HEADER_WRITE_FAIL;
     }
     size_t bmp_padding = (4 - (sizeof(struct pixel)*header.biWidth) % 4) % 4 ;
     fseek(output_file, header.bOffBits, SEEK_SET);
     for (size_t height_cnt = 0; height_cnt < img->height; height_cnt++) {
 	if (!fwrite(&img->data[height_cnt*(img->width)], sizeof(struct pixel), img->width, output_file)) {
-	    puts("[ERROR] WRITE_BITS_ERROR!");
-	    return false;
+	    return BITS_WRITE_FAIL;
 	}
 	fseek(output_file, bmp_padding, SEEK_CUR);
     }
-    return true;
+    return CONVERTATION_SUCCESS;
 }
 
 static bool header_is_type_valid (struct bmp_header const* header) {

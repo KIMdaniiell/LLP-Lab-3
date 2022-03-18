@@ -19,6 +19,17 @@
 #define HEADER_BF_RESERVED 0
 #define HEADER_BI_COMPRESSION 0
 
+enum convertation_result {
+	HEADER_READ_FAIL,
+	HEADER_WRITE_FAIL,
+	INVALID_HEADER_TYPE,
+	INVALID_HEADER_SIZE_PARAMETERS,
+	BITS_READ_FAIL,
+	BITS_WRITE_FAIL,
+	READ_INVALID_HEADER,
+	IMAGE_OBJECT_CREATION_FAIL,
+	CONVERTATION_SUCCESS		
+};
 
 struct __attribute__((packed)) bmp_header {
     uint16_t bfType;
@@ -39,8 +50,8 @@ struct __attribute__((packed)) bmp_header {
 };
 
 
-bool from_bmp( FILE* input_file, struct image* img );
+enum convertation_result from_bmp( FILE* input_file, struct image* img );
 
-bool to_bmp( FILE* output_file, struct image const* img );
+enum convertation_result to_bmp( FILE* output_file, struct image const* img );
 
 #endif
