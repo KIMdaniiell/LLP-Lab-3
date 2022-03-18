@@ -1,5 +1,5 @@
-#ifndef _FILE_IO_H_
-#define _FILE_IO_H_
+#ifndef _IMAGE_FILE_IO_H_
+#define _IMAGE_FILE_IO_H_
 
 #include <stdbool.h>
 #include <stdio.h>

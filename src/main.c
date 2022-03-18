@@ -1,5 +1,5 @@
 #include "bmp_io.h"
-#include "image_file_io.h"
+#include "file_io.h"
 #include "transforms.h"
 
 #include <stdio.h>
@@ -60,4 +60,5 @@ int main( int argc, char** argv ) {
     }
     puts("OUTPUT FILE CLOSED...");
 }
+
 
